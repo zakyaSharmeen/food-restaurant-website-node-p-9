@@ -5,7 +5,7 @@ const foodRoute = require("./routes/foodRoutes");
 const authRouter = require("./controllers/authController");
 const auth = require("./middleware/authMiddleware")
 const cors = require("cors");
-const cloudinary = require("cloudinary");
+const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const {CloudinaryStorage} = require("multer-storage-cloudinary")
 
@@ -65,6 +65,28 @@ app.post('/upload-image', parser.single('file'),(req, res)=>{
 
   }
 })
+
+
+app.get('/userProfile',auth, async(req, res)=>{
+  
+  try{
+    const user = await userModel.findById(req.user.id).select("-password")
+    if(!user){
+      return res.status(404).json({msg: "User not found"})
+    }
+   
+    res.json(user)
+
+  }catch(err) {
+    console.error(err);
+    res.status(500).send("server error")
+    
+
+  }
+})
+
+
+
 
 
 

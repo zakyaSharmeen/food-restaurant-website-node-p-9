@@ -1,18 +1,39 @@
 
 
-import {  Routes, Route } from "react-router-dom";
+import {  Routes, Route, useLocation } from "react-router-dom";
 import Admin from "./pages/Admin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CreateFood from "./pages/CreateFood";
 import EditFood from "./pages/EditFood";
 import DeleteFood from "./pages/DeleteFood";
+// import Logout from "./pages/Logout";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Navbar from "./pages/Navbar";
+import AdminNavbar from "./pages/AdminNavbar";
+import Home from "./pages/Home";
+
 
 
 const App =()=> {
+  const location = useLocation()
+  const isAdminRoute = location.pathname.startsWith("/admin")
+
+
+
+
   return (
+    
     <div>
+          {isAdminRoute ? <AdminNavbar/> : <Navbar/>}
+
       <Routes>
-      {/* <Route path="/admin" element={<Admin />} /> */}
+      <Route path="/" element={<Home />} />
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+
       <Route
           path="/admin/*"
           element={

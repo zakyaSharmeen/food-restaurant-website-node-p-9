@@ -1,6 +1,6 @@
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import axios from "axios";
 
@@ -9,7 +9,7 @@ function CreateFood() {
   const [priceInCents, setPriceCents] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
   const [img, setImg] = useState(null);
@@ -20,7 +20,7 @@ function CreateFood() {
     setImg(selectedFile);
     if (selectedFile) {
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onloadend = () => {
         setImgPreview(reader.result);
       };
       reader.readAsDataURL(selectedFile);
@@ -32,13 +32,14 @@ function CreateFood() {
   const uploadFile = async () => {
     if(!img){
       enqueueSnackbar("No image selected", {variant: "warning"})
+      return;
     }
 
     const token = localStorage.getItem("token")
     if(!token){
       console.log("no token found");
       enqueueSnackbar("Authentication required", {variant: "error"})
-      return
+      return;
       
     }
 
@@ -48,17 +49,17 @@ function CreateFood() {
 
     try{
       const uploadUrl = "http://localhost:5000/upload-image";
-      const res = await axios.post(uploadUrl, data, {
+      const response = await axios.post(uploadUrl, data, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
 
       })
 
-      const {secret_url} = res.data;
-      console.log("upload image url", secret_url);
-      enqueueSnackbar('image uploade successfully')
-      return secret_url;
+      const {secure_url} = response.data;
+      console.log("upload image url", secure_url);
+      enqueueSnackbar('image uploade successfully', {variant: "success"})
+      return secure_url;
       
 
 
@@ -75,69 +76,129 @@ function CreateFood() {
 
 
   };
+  // const handleSaveFood = async () => {
+  //   if(!name || !priceInCents){
+  //     enqueueSnackbar("please fill all the required fields", {variant: "warning"})
+  //     return
+  //   }
+
+  //   const price = parseInt(priceInCents);
+  //   if(isNaN(price) || price <=0){
+  //     enqueueSnackbar("price must be positive number", {varient: 'warming'})
+  //     return
+  //   }
+  //   if(name.length <2 || name.length >30){
+  //     enqueueSnackbar("Food anme must be between 2 and 30 character", {varient: 'warming'})
+  //     return
+  //   }
+  //   setLoading(true)
+
+  //   try{
+  //     const uploadImageUrl = await uploadFile()
+  //     if(!uploadImageUrl){
+  //       throw new Error("image upload failed")
+  //     }
+
+  //     const formData = {
+  //       name,
+  //       priceInCents,
+  //       image: uploadImageUrl
+
+  //     }
+  //     const token= localStorage.getItem("token")
+  //     if(!token) {
+  //       enqueueSnackbar("Authentication failedr", {varient: 'error'})
+  //       setLoading(false)
+  //       return
+  //     }
+
+  //     const config = {
+  //       headers:{
+  //         "Authorization": `Bearer ${token}`
+  //       }
+  //     }
+
+  //     console.log(import.meta.env.VITE_REACT_APP_BACKEND_BASEURL);
+  //     await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/food`, formData,config)
+
+  //     enqueueSnackbar("Food saved successfully", {varient: 'success'})
+
+      
+
+
+
+
+
+  //   }catch(err){
+  //     console.log("Error",err);
+  //     enqueueSnackbar("Error in saving food:" + (err.res?.data?.message || err.message), {varient: 'success'})
+
+
+      
+  //   }finally{
+  //     setLoading(false)
+  //   }
+  // };
+
   const handleSaveFood = async () => {
-    if(!name || !priceInCents){
-      enqueueSnackbar("please fill all the required fields", {variant: "warning"})
-      return
+    if (!name || !priceInCents) {
+      enqueueSnackbar("Please fill all the required fields", {variant: "warning"});
+      return;
     }
-
+  
     const price = parseInt(priceInCents);
-    if(isNaN(price) || price <=0){
-      enqueueSnackbar("price must be positive number", {varient: 'warming'})
-      return
+    if (isNaN(price) || price <= 0) {
+      enqueueSnackbar("Price must be a positive number", {variant: "warning"});
+      return;
     }
-    if(name.length <2 || name.length >30){
-      enqueueSnackbar("Food anme must be between 2 and 30 character", {varient: 'warming'})
-      return
+  
+    if (name.length < 2 || name.length > 30) {
+      enqueueSnackbar("Food name must be between 2 and 30 characters", {variant: "warning"});
+      return;
     }
-    setLoading(true)
-
-    try{
-      const uploadImageUrl = await uploadFile()
-      if(!uploadImageUrl){
-        throw new Error("image upload failed")
+  
+    setLoading(true);
+  
+    try {
+      const uploadImageUrl = await uploadFile();
+      if (!uploadImageUrl) {
+        throw new Error("Image upload failed");
       }
-
+  
       const formData = {
         name,
         priceInCents,
-        image: uploadImageUrl
-
+        image: uploadImageUrl,
+      };
+  
+      const token = localStorage.getItem("token");
+      if (!token) {
+        enqueueSnackbar("Authentication failed. Please log in again.", {variant: "error"});
+        setLoading(false);
+        return;
       }
-      const token= localStorage.getItem("token")
-      if(!token) {
-        enqueueSnackbar("Authentication failedr", {varient: 'error'})
-        setLoading(false)
-        return
-      }
-
+  
       const config = {
-        headers:{
-          "Authorization": `Bearer ${token}`
-        }
-      }
-
-      console.log(import.meta.env.VITE_REACT_APP_BACKEND_BASEURL);
-      await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/food`, formData,config)
-
-      enqueueSnackbar("Food saved successfully", {varient: 'success'})
-
-      
-
-
-
-
-
-    }catch(err){
-      console.log("Error",err);
-      enqueueSnackbar("Error in saving food:" + (err.res?.data?.message || err.message), {varient: 'success'})
-
-
-      
-    }finally{
-      setLoading(false)
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      };
+  
+      console.log("Backend URL:", import.meta.env.VITE_REACT_APP_BACKEND_BASEURL);
+      await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/food`, formData, config);
+  
+      enqueueSnackbar("Food saved successfully", {variant: "success"});
+    } catch (err) {
+      console.log("Error:", err);
+      enqueueSnackbar(
+        "Error in saving food: " + (err.response?.data?.message || err.message),
+        {variant: "error"}
+      );
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   return (
     <div>
@@ -232,7 +293,7 @@ function CreateFood() {
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="hidden"
+              className=""
             />
             <label
               htmlFor="img"
