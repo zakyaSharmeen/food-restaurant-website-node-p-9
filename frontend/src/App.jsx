@@ -12,6 +12,11 @@ import Login from "./pages/Login";
 import Navbar from "./pages/Navbar";
 import AdminNavbar from "./pages/AdminNavbar";
 import Home from "./pages/Home";
+import Contact from "./pages/Contact";
+import Footer from "./pages/Footer";
+import Cart from "./pages/Cart";
+import Success from "./pages/Success";
+import Cancel from "./pages/Cancel";
 
 
 
@@ -29,9 +34,15 @@ const App =()=> {
 
       <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/conatct" element={<Contact />} />
+      <Route path="/cart" element={<Cart />} />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      <Route path="/success" element={<Success />} />
+      <Route path="/cancel" element={<Cancel />} />
+
 
 
       <Route
@@ -45,6 +56,8 @@ const App =()=> {
      
 
       </Routes>
+      <Contact/>
+      <Footer/>
       
     </div>
   )

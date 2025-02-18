@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react"
 import logo from "../assets/logoQdeli.png"
 import restaurant from "../assets/restaurant1.png"
+import FoodCard from "./FoodCard";
 
 
     
@@ -34,6 +35,8 @@ import restaurant from "../assets/restaurant1.png"
                         flex items-center justify-start my-8'>
             <h1 className='text-2xl my-8 font-bold pl-8 text-white'>Lunch Specials</h1>
         </div>
+
+        <FoodCard food={food}/>
 
     </div>
       )

@@ -2,13 +2,18 @@ const express = require("express");
 const { config } = require("dotenv");
 const mongoose = require("mongoose");
 const foodRoute = require("./routes/foodRoutes");
+const orderRoute = require("./routes/oderRoute");
+
 const authRouter = require("./controllers/authController");
 const auth = require("./middleware/authMiddleware")
 const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
-const {CloudinaryStorage} = require("multer-storage-cloudinary")
-
+const {CloudinaryStorage} = require("multer-storage-cloudinary");
+// const { default: Stripe } = require("stripe");
+// const { Stripe } = require("stripe");
+const stripeRouter = require("./routes/stripeRoute");
+const { webhookRouter } = require("./webhooks/webhookHandler");
 
 
 
@@ -21,10 +26,22 @@ mongoose .connect(process.env.mongoDB)
 
 app.use(cors());
 app.use(express.json())
+
+app.use("/stripe",stripeRouter)
 app.use("/food", foodRoute)
+
+
+
 
 app.use('/auth', authRouter)
 app.use(auth)
+
+
+app.use("/order",orderRoute)
+
+
+
+
 
 cloudinary.config({ 
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
@@ -85,6 +102,8 @@ app.get('/userProfile',auth, async(req, res)=>{
   }
 })
 
+
+app.use("webhook", webhookRouter)
 
 
 

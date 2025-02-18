@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import {AiOutlineClose,AiOutlineMenu}  from "react-icons/ai"
 import logonav from "../assets/logoQdeli.png"
+import CardIcon from "./CardIcon"
 
 function Navbar() {
     const[nav, setNav] = useState(false)
@@ -19,6 +20,12 @@ function Navbar() {
             <a href="/" className="flex items-center">
                 <img src={logonav} alt="logo" className="max-w-[100px]"/>
             </a>
+
+            <Link to="/cart">
+            <CardIcon/>
+            </Link>
+
+
             <button onClick={toggleNav} className='text-white lg:hidden'>
                 {nav ? <AiOutlineClose /> : <AiOutlineMenu />}
             </button>
